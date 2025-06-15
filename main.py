@@ -14,7 +14,8 @@ client = genai.Client(
 content = input("Enter prompt: ")
 
 response = client.models.generate_content(
-    model="gemini-2.0-flash", 
+    # model="gemini-2.0-flash", 
+    model = "models/gemini-2.5-flash-preview-05-20",
     contents=f"{content}"
 )
 
