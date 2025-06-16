@@ -1,12 +1,34 @@
 from dotenv import load_dotenv
 import os
 from google import genai
+from google.genai import types
 
 from pydantic import BaseModel #structured output
 
 import json #better readability for structured output
 
-load_dotenv()
+
+#i want to import text documents and have gemini summarise it
+
+#required libraries
+import pathlib
+import httpx
+
+#fluid printing for text, easier on eyes and readability
+import time
+import sys
+delay=0.007  #change as per liking(0.03 for a nice relaxing scrolling effect, very lofi!)
+def pretty_print(text, delay=delay):
+    for char in text:
+        sys.stdout.write(f"\033[35m{char}\033[0m")
+        sys.stdout.flush() 
+        time.sleep(delay)
+
+
+
+load_dotenv()   #loading .env file variables
+
+
 
 google_api_key = os.getenv("gemini_api")
 
@@ -16,7 +38,7 @@ client = genai.Client(
 )
 
 # prompt = input("Enter prompt: ")
-
+ 
 #plain jane response
 # response = client.models.generate_content(
 #     # model="gemini-2.0-flash", 
@@ -66,12 +88,46 @@ client = genai.Client(
 ###########################################################################
 #chat feature
 
+# prompt = ("Enter message: ")
+# chat = client.chats.create(model="models/gemini-2.5-flash-preview-05-20")
+# while(prompt.lower()!="exit"):
+#     prompt = input("Enter message: ")
+#     response = chat.send_message_stream(prompt)
+#     for chunk in response:
+#         # print(chunk.text,end="")
+#         # print(f"\033[35m{chunk.text}\033[0m",end="")        #if you want colored output in terminal
+#         pretty_print(chunk.text)
+#     print()
+
+###########################################################################
+#chat feature but with imported text to summmarise and talk about
+
+#using the entire text of white nights by dostoevsky
+
+prompt = "Summarise the text given. Keep it concise yet omit no details."
+
 chat = client.chats.create(model="models/gemini-2.5-flash-preview-05-20")
-while(prompt.lower()!="exit"):
+filepath = pathlib.Path('white_nights.txt')
+filetext = filepath.read_text()
+
+
+summary_response = chat.send_message_stream(f"{prompt}{filetext}")
+
+for chunk in summary_response:
+    pretty_print(chunk.text)
+print()
+
+while(prompt.lower() != exit):
     prompt = input("Enter message: ")
     response = chat.send_message_stream(prompt)
     for chunk in response:
-        # print(chunk.text,end="")
-        print(f"\033[35m{chunk.text}\033[0m",end="")        #if you want colored output in terminal
-
+        # print(f"\033[35m{chunk.text}\033[0m",end="")
+        try:
+            pretty_print(chunk.text)
+        except TypeError:
+            pretty_print("")
     print()
+
+#implement file uploading so it doesn't have to print out summaries to remember context
+
+
