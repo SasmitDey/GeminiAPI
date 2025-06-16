@@ -1,2 +1,6 @@
 venv/
 .env
+
+
+#additional testing files
+white_nights.txt
