@@ -128,7 +128,9 @@ client = genai.Client(
 #             pretty_print("")
 #     print()
 
-#implement file uploading so it doesn't have to print out summaries to remember context
+###########################################################################
+
+#implement file uploading so it doesn't have to print out summaries to remember context (to do)
 
 
 
@@ -136,14 +138,47 @@ client = genai.Client(
 ###########################################################################
 
 #google searching
-chat = client.chats.create(model="models/gemini-2.5-flash-preview-05-20")
+# chat = client.chats.create(model="models/gemini-2.5-flash-preview-05-20")
 
-grounding_tool = types.Tool(
-    google_search=types.GoogleSearch()
-)
+# grounding_tool = types.Tool(
+#     google_search=types.GoogleSearch()
+# )
+
+# config = types.GenerateContentConfig(
+#     tools=[grounding_tool]
+# )
+
+# prompt = input("Enter message: ")
+# while(prompt.lower() != "exit"):
+#     # response = chat.send_message_stream(prompt)
+#     response = chat.send_message_stream(
+#         prompt,
+#         config=config
+#     )
+#     for chunk in response:
+#         # print(f"\033[35m{chunk.text}\033[0m",end="")
+#         try:
+#             pretty_print(chunk.text)
+#         except TypeError:
+#             pretty_print("")
+#     print()
+#     prompt = input("Enter message: ")
+
+###########################################################################
+#google searching with url context (give url to add additional context for model)
+
+chat = client.chats.create(model="models/gemini-2.5-flash-preview-05-20")
+system_instruction = os.getenv('system_instruction')
+
+tools = []
+tools.append(types.Tool(google_search=types.GoogleSearch))
+tools.append(types.Tool(url_context=types.UrlContext))
+# tools.append(types.Tool(code_execution=types.ToolCodeExecution))  #turn on if code execution required
+                                                                    #otherwise messes up normal outputs
 
 config = types.GenerateContentConfig(
-    tools=[grounding_tool]
+    tools=tools,
+    system_instruction=system_instruction
 )
 
 prompt = input("Enter message: ")
