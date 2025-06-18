@@ -104,22 +104,55 @@ client = genai.Client(
 
 #using the entire text of white nights by dostoevsky
 
-prompt = "Summarise the text given. Keep it concise yet omit no details."
+# prompt = "Summarise the text given. Keep it concise yet omit no details."
 
+# chat = client.chats.create(model="models/gemini-2.5-flash-preview-05-20")
+# filepath = pathlib.Path('white_nights.txt')
+# filetext = filepath.read_text()
+
+
+# summary_response = chat.send_message_stream(f"{prompt}{filetext}")
+
+# for chunk in summary_response:
+#     pretty_print(chunk.text)
+# print()
+
+# while(prompt.lower() != exit):
+#     prompt = input("Enter message: ")
+#     response = chat.send_message_stream(prompt)
+#     for chunk in response:
+#         # print(f"\033[35m{chunk.text}\033[0m",end="")
+#         try:
+#             pretty_print(chunk.text)
+#         except TypeError:
+#             pretty_print("")
+#     print()
+
+#implement file uploading so it doesn't have to print out summaries to remember context
+
+
+
+
+###########################################################################
+
+#google searching
 chat = client.chats.create(model="models/gemini-2.5-flash-preview-05-20")
-filepath = pathlib.Path('white_nights.txt')
-filetext = filepath.read_text()
 
+grounding_tool = types.Tool(
+    google_search=types.GoogleSearch()
+)
 
-summary_response = chat.send_message_stream(f"{prompt}{filetext}")
+config = types.GenerateContentConfig(
+    tools=[grounding_tool]
+)
 
-for chunk in summary_response:
-    pretty_print(chunk.text)
-print()
-
-while(prompt.lower() != exit):
-    prompt = input("Enter message: ")
-    response = chat.send_message_stream(prompt)
+prompt = input("Enter message: ")
+while(prompt.lower() != "exit"):
+    # response = chat.send_message_stream(prompt)
+    response = chat.send_message_stream(
+        prompt,
+        config=config
+    )
     for chunk in response:
         # print(f"\033[35m{chunk.text}\033[0m",end="")
         try:
@@ -127,7 +160,4 @@ while(prompt.lower() != exit):
         except TypeError:
             pretty_print("")
     print()
-
-#implement file uploading so it doesn't have to print out summaries to remember context
-
-
+    prompt = input("Enter message: ")
