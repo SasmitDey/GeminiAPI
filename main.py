@@ -3,6 +3,9 @@ import os
 from google import genai
 from google.genai import types
 
+from colorama import init, Fore, Style      #for custom colors in output
+init()      #initialising colorama
+
 from pydantic import BaseModel #structured output
 
 import json #better readability for structured output
@@ -20,7 +23,8 @@ import sys
 delay=0.007  #change as per liking(0.03 for a nice relaxing scrolling effect, very lofi!)
 def pretty_print(text, delay=delay):
     for char in text:
-        sys.stdout.write(f"\033[35m{char}\033[0m")
+        # sys.stdout.write(f"\033[35m{char}\033[0m")
+        sys.stdout.write(f"{Fore.MAGENTA}{char}{Style.RESET_ALL}")      #colorama formatting
         sys.stdout.flush() 
         time.sleep(delay)
 
